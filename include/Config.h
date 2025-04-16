@@ -38,9 +38,8 @@ void Print_Menu()
   Serial.println("0 - Show Menu");
   Serial.println("1 - Move Forward");
   Serial.println("2 - Move Backwards");
-  Serial.println("3 - Stop");
-  Serial.println("4 - Turn Left");
-  Serial.println("5 - Turn Right");
+  Serial.println("3 - Turn Left");
+  Serial.println("4 - Turn Right");
   showMenu = 0;
 }
 
@@ -85,34 +84,17 @@ void Select_Menu()
   }
 
   // Goes to the selected option of the operator
-  switch(option)
+  if(option == 0)
   {
-    case 0:
-      if(showMenu == 1)
-      {
-        Stop();
-        Print_Menu();
-      }
-      break;
-    case 1:
-      Move_Forward(128);
-      break;
-    case 2:
-      Move_Backward(128);
-      break;
-    case 3:
+    if(showMenu == 1)
+    {
       Stop();
-      break;
-    case 4:
-      Rotate_Left(128);
-      break;
-    case 5:
-      Rotate_Right(128);
-      break;
-    default:
-      Stop();
-      Serial.println("Unknown command!");
-      break;
+      Print_Menu();
+    }
   }
+
+  // Set the PWM speed and based on the option the
+  // car will go forward, backwards, turn left and turn right.
+  changeSpeed(255, option);
 }
 #endif

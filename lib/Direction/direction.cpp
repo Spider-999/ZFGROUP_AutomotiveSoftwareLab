@@ -95,12 +95,12 @@ DESCRIPTION:
 void Rotate_Left(int speed) 
 {
     // Set motor spin direction to forward
-    digitalWrite(2, HIGH);
+    digitalWrite(2, LOW);
     digitalWrite(4, LOW);
 
-    // Set left turn rotation speed of the motor
+    // Set left turn rotation speed of the motors
     analogWrite(5, speed);
-    analogWrite(6, BRAKE_SPEED);
+    analogWrite(6, speed);
 }
 
 /**************************************************************************************************
@@ -116,10 +116,10 @@ void Rotate_Right(int speed)
 {
     // Set motor spin direction to forward
     digitalWrite(2, HIGH);
-    digitalWrite(4, LOW);
+    digitalWrite(4, HIGH);
 
-    // Set right turn rotation speed of the motor
-    analogWrite(5, BRAKE_SPEED);
+    // Set right turn rotation speed of the motors
+    analogWrite(5, speed);
     analogWrite(6, speed);
 }
 
@@ -149,7 +149,31 @@ DESCRIPTION:
 **************************************************************************************************/
 void setPwm(uint8_t dcspeed, uint8_t mode)
 {
+    // Check the input dc speed
+    dcspeed = checkPWM(dcspeed, LOWER_PWM_LIMIT, HIGHER_PWM_LIMIT);
 
+    // Update the DC_PWM_value global variable
+    DC_PWM_Value = dcspeed;
+
+    // Choose the mode based on the user's option
+    switch(mode)
+    {
+        case FORWARD:
+            Move_Forward(dcspeed);
+            break;
+        case BACKWARD:
+            Move_Backward(dcspeed);
+            break;
+        case LEFT:
+            Rotate_Left(dcspeed);
+            break;
+        case RIGHT:
+            Rotate_Right(dcspeed);
+            break;
+        default:
+            Stop();
+            break;
+    }
 }
 
 /**************************************************************************************************
@@ -163,7 +187,10 @@ DESCRIPTION:
 **************************************************************************************************/
 int getPwm()
 {
-
+    // Just a safety check. The DC_PWM_Value shouln't ever be
+    // outside the pwm interval.
+    DC_PWM_Value = checkPWM(DC_PWM_Value, LOWER_PWM_LIMIT, HIGHER_PWM_LIMIT);
+    return DC_PWM_Value;
 }
 
 /**************************************************************************************************
@@ -180,7 +207,16 @@ DESCRIPTION:
 **************************************************************************************************/
 void changeSpeed(uint8_t targetSpeed, uint8_t mode)
 {
+    // Reset the PWM value
+    DC_PWM_Value = 0;
 
+    // Increase the speed gradually until it reaches the target speed.
+    do
+    {
+        DC_PWM_Value = getPwm() + 1;
+        delay(20);
+        setPwm(DC_PWM_Value, mode);
+    } while (checkPWM(DC_PWM_Value, LOWER_PWM_LIMIT, targetSpeed) < targetSpeed);
 }
 
 /**************************************************************************************************
@@ -209,7 +245,22 @@ DESCRIPTION:
     Verify if the PWM it's within threshold.
 
 **************************************************************************************************/
-int checkPWM(uint8_t number, int lower_limit, int upper_limit)
+int checkPWM(int number, int lower_limit, int upper_limit)
 {
+    // If the number is lower than the lower limit
+    // return the lower limit number.
+    if(number < lower_limit)
+    {
+        return lower_limit;
+    }
+    
+    // If the number is higher than the upper limit
+    // return the upper limit number.
+    if(number > upper_limit)
+    {
+        return upper_limit;
+    }
 
+    // If the number is within the interval then return it.
+    return number;
 }
