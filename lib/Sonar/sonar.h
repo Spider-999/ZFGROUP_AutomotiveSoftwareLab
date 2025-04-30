@@ -29,6 +29,8 @@
 #define DISTANCE_SENSOR_ECHO_PIN 13
 #endif
 
+#define ULTRASONIC_TIME_MS 10
+
 /**************************************************************************************************
 *
 *   VARIABLE DECLARATIONS

@@ -92,9 +92,9 @@ void Select_Menu()
       Print_Menu();
     }
   }
-
-  // Set the PWM speed and based on the option the
-  // car will go forward, backwards, turn left and turn right.
+  
   changeSpeed(255, option);
+  // getFrontObstacleDistance_cm();
+  autonomousEmergencyBrake();
 }
 #endif

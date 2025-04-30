@@ -81,6 +81,7 @@ void Stop()
     // Stop motors
     analogWrite(5, BRAKE_SPEED);
     analogWrite(6, BRAKE_SPEED);
+    DC_PWM_Value = 0;
 }
 
 /**************************************************************************************************
@@ -135,7 +136,8 @@ DESCRIPTION:
 **************************************************************************************************/
 void autonomousEmergencyBrake()
 {
-
+    if(getFrontObstacleDistance_cm() <= AEB_THRESHOLD)
+        Stop();
 }
 
 /**************************************************************************************************
@@ -207,16 +209,16 @@ DESCRIPTION:
 **************************************************************************************************/
 void changeSpeed(uint8_t targetSpeed, uint8_t mode)
 {
-    // Reset the PWM value
-    DC_PWM_Value = 0;
-
-    // Increase the speed gradually until it reaches the target speed.
-    do
+    long currentTime = millis();
+    
+    // Increase the speed gradually until it reaches the target speed every TIME_TO_CHANGE_SPEED.
+    if(currentTime - previousTime > TIME_TO_CHANGE_SPEED)
     {
-        DC_PWM_Value = getPwm() + 1;
-        delay(20);
+        // Store the previous time.
+        previousTime = currentTime;
+        DC_PWM_Value++;
         setPwm(DC_PWM_Value, mode);
-    } while (checkPWM(DC_PWM_Value, LOWER_PWM_LIMIT, targetSpeed) < targetSpeed);
+    }
 }
 
 /**************************************************************************************************

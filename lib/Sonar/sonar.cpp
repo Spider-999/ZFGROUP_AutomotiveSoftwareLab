@@ -33,7 +33,20 @@ DESCRIPTION:
     Returns the distance to the obstacle.
 
 **************************************************************************************************/
-static float getFrontObstacleDistance_cm()
+extern float getFrontObstacleDistance_cm()
 {
+  // Generate an ultrasonic pulse that lasts for ULTRASONIC_TIME_MS microseconds
+  digitalWrite(DISTANCE_SENSOR_TRIG_PIN, HIGH);
+  delayMicroseconds(ULTRASONIC_TIME_MS);
+  digitalWrite(DISTANCE_SENSOR_TRIG_PIN, LOW);
 
+  // Measure the length in microseconds
+  float distanceMS = pulseIn(DISTANCE_SENSOR_ECHO_PIN, HIGH);
+
+  // Convert the length in microseconds to cm
+  float distanceCM = distanceMS * 0.017;
+  
+  Serial.println(distanceMS);
+  Serial.println(distanceCM);
+  return distanceCM;
 }

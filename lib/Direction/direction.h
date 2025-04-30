@@ -1,4 +1,4 @@
-#ifndef __DIROECTION_H__
+#ifndef __DIRECTION_H__
 #define __DIRECTION_H__
 
 /**************************************************************************************************
@@ -23,6 +23,7 @@
 #define BRAKE_SPEED 0
 #define LOWER_PWM_LIMIT 1
 #define HIGHER_PWM_LIMIT 255
+#define TIME_TO_CHANGE_SPEED 10
 
 /**************************************************************************************************
 *
@@ -32,6 +33,7 @@
 
 static int DC_PWM_Value;
 static float distance;
+static long int previousTime = 0;
 
 /**************************************************************************************************
 *
