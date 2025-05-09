@@ -93,8 +93,9 @@ void Select_Menu()
     }
   }
   
-  changeSpeed(255, option);
+  // changeSpeed(255, option);
   // getFrontObstacleDistance_cm();
-  autonomousEmergencyBrake();
+  // autonomousEmergencyBrake();
+  adaptive_cruise_control(BRAKE_SPEED, HIGHER_PWM_LIMIT, AEB_THRESHOLD, 50);
 }
 #endif

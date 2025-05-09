@@ -137,7 +137,11 @@ DESCRIPTION:
 void autonomousEmergencyBrake()
 {
     if(getFrontObstacleDistance_cm() <= AEB_THRESHOLD)
+    {
+        Serial.println("stopping");
+        Serial.println(getFrontObstacleDistance_cm());
         Stop();
+    }
 }
 
 /**************************************************************************************************
@@ -235,6 +239,24 @@ DESCRIPTION:
 **************************************************************************************************/
 void adaptive_cruise_control(uint8_t min_speed, uint8_t max_speed, uint8_t min_distance, uint16_t max_distance) 
 { 
+    // If the car is too close to the obstacle in front, brake.
+    float obstacleDistance = getFrontObstacleDistance_cm();
+
+    if(obstacleDistance < min_distance)
+    {
+        Stop();
+    }
+    else if(obstacleDistance > min_distance && obstacleDistance < max_distance)
+    {
+        // The obstacle distance is read every 100 milliseconds, thus the speed of the
+        // obstacle is the obstacle distance divided by 0.1f.
+        float obstacleSpeed = obstacleDistance / 0.1f;
+        changeSpeed(obstacleSpeed, 1);
+    }
+    else if(obstacleDistance >= max_distance)
+    {
+        changeSpeed(max_speed, 1);
+    }
 
 }
 

@@ -23,7 +23,7 @@
 #define BRAKE_SPEED 0
 #define LOWER_PWM_LIMIT 1
 #define HIGHER_PWM_LIMIT 255
-#define TIME_TO_CHANGE_SPEED 10
+#define TIME_TO_CHANGE_SPEED 2
 
 /**************************************************************************************************
 *
