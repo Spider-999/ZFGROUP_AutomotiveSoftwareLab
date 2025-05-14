@@ -138,8 +138,6 @@ void autonomousEmergencyBrake()
 {
     if(getFrontObstacleDistance_cm() <= AEB_THRESHOLD)
     {
-        Serial.println("stopping");
-        Serial.println(getFrontObstacleDistance_cm());
         Stop();
     }
 }
@@ -215,13 +213,13 @@ void changeSpeed(uint8_t targetSpeed, uint8_t mode)
 {
     long currentTime = millis();
     
-    // Increase the speed gradually until it reaches the target speed every TIME_TO_CHANGE_SPEED.
-    if(currentTime - previousTime > TIME_TO_CHANGE_SPEED)
+    // Increase the speed gradually until it reaches the target speed every 20 ms.
+    if(currentTime - previousTime > 20)
     {
         // Store the previous time.
         previousTime = currentTime;
-        DC_PWM_Value++;
-        setPwm(DC_PWM_Value, mode);
+        DC_PWM_Value = targetSpeed;
+      	setPwm(DC_PWM_Value, mode);
     }
 }
 
@@ -239,26 +237,69 @@ DESCRIPTION:
 **************************************************************************************************/
 void adaptive_cruise_control(uint8_t min_speed, uint8_t max_speed, uint8_t min_distance, uint16_t max_distance) 
 { 
-    // If the car is too close to the obstacle in front, brake.
     float obstacleDistance = getFrontObstacleDistance_cm();
+    unsigned long currentTime = millis();
+    unsigned long deltaTime = currentTime - pid.lastTime;
 
-    if(obstacleDistance < min_distance)
+    // Take sampling times and calculate the PID.
+    if(deltaTime >= pid.samplingTime)
     {
-        Stop();
-    }
-    else if(obstacleDistance > min_distance && obstacleDistance < max_distance)
-    {
-        // The obstacle distance is read every 100 milliseconds, thus the speed of the
-        // obstacle is the obstacle distance divided by 0.1f.
-        float obstacleSpeed = obstacleDistance / 0.1f;
-        changeSpeed(obstacleSpeed, 1);
-    }
-    else if(obstacleDistance >= max_distance)
-    {
-        changeSpeed(max_speed, 1);
-    }
+      // Compute the error for the proportional term.
+      pid.currentError = obstacleDistance - min_distance;
+      
+      // Compute integral term.
+      pid.integralError += pid.currentError;
+      pid.integralError = constrain(pid.integralError, min_speed, max_speed);
 
+      // Compute derivative error.
+      pid.derivativeError = pid.currentError - pid.lastError;
+      pid.derivativeError = constrain(pid.derivativeError, min_speed, max_speed);
+      
+      // Compute the PID output.
+      pid.speedControlSignal = pid.Kp * pid.currentError + pid.Ki * pid.integralError + pid.Kd * pid.derivativeError;
+      pid.speedControlSignal = constrain(pid.speedControlSignal, min_speed, max_speed);
+
+      // Change speed using the PID output.
+      changeSpeed((uint8_t)pid.speedControlSignal, FORWARD);
+
+      // Emergency brake if the obstacle is too close.
+  	  autonomousEmergencyBrake();
+
+      // Update values for the next compute cycles.
+      pid.lastError = pid.currentError;
+      pid.lastTime = currentTime;
+    }
 }
+
+/**************************************************************************************************
+                              FUNCTION INFO
+NAME:
+    initializePID
+
+DESCRIPTION:
+    Initialize the PID values.
+
+**************************************************************************************************/
+void initializePID()
+  {
+    // PID tuning variables
+    pid.Kp = 8;
+    pid.Ki = 0.02;
+    pid.Kd = 0.8;
+	
+    // PID errors
+    pid.currentError = 0.0f;
+    pid.lastError = 0.0f;
+    pid.derivativeError = 0.0f;
+    pid.integralError = 0.0f;
+
+    // PID output
+    pid.speedControlSignal = 0.0f;
+
+    // PID time sampling variables
+    pid.lastTime = 0;
+    pid.samplingTime = 20;
+  }
 
 /**************************************************************************************************
                               FUNCTION INFO

@@ -23,7 +23,26 @@
 #define BRAKE_SPEED 0
 #define LOWER_PWM_LIMIT 1
 #define HIGHER_PWM_LIMIT 255
-#define TIME_TO_CHANGE_SPEED 2
+
+/**************************************************************************************************
+*
+*   STRUCTURES
+*
+**************************************************************************************************/
+
+typedef struct PID
+{
+  float Kp;
+  float Ki;
+  float Kd;
+  float currentError;
+  float lastError;
+  float derivativeError;
+  float integralError = 0.0f;
+  float speedControlSignal;
+  unsigned int lastTime;
+  unsigned int samplingTime;
+} PID;
 
 /**************************************************************************************************
 *
@@ -34,6 +53,8 @@
 static int DC_PWM_Value;
 static float distance;
 static long int previousTime = 0;
+static PID pid;
+
 
 /**************************************************************************************************
 *
@@ -53,5 +74,6 @@ int     getPwm();
 void    adaptive_cruise_control(uint8_t, uint8_t, uint8_t, uint16_t);
 int     checkPWM(int, int, int);
 void    changeSpeed(uint8_t, uint8_t);
+void    initializePID();
 
 #endif
