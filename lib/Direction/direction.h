@@ -54,6 +54,8 @@ static int DC_PWM_Value;
 static float distance;
 static long int previousTime = 0;
 static PID pid;
+static int previousLeft = 0;
+static int previousRight = 0;
 
 
 /**************************************************************************************************
@@ -63,6 +65,7 @@ static PID pid;
 **************************************************************************************************/
 
 void    setupMotors();
+void    setupLineTracking();
 void    Move_Forward(int speed);
 void    Move_Backward(int speed);
 void    Stop();
@@ -74,6 +77,7 @@ int     getPwm();
 void    adaptive_cruise_control(uint8_t, uint8_t, uint8_t, uint16_t);
 int     checkPWM(int, int, int);
 void    changeSpeed(uint8_t, uint8_t);
+void    LineTrackingFunction();
 void    initializePID();
 
 #endif

@@ -9,6 +9,7 @@
 
 #include <Arduino.h>
 #include <MovingAverage.h>
+#include <Servo.h>
 
 /**************************************************************************************************
 *
@@ -16,8 +17,8 @@
 *
 **************************************************************************************************/
 
-#define CAR1_PIXY 1
-#define CAR2_ARM 0
+#define CAR1_PIXY 0
+#define CAR2_ARM 1
 
 #if CAR1_PIXY == 1
 #define DISTANCE_SENSOR_TRIG_PIN A2
@@ -42,6 +43,9 @@ static float duration;
 static float lastSonarValue;
 static MovingAverage movingAverage(MOVING_AVG_SIZE);
 static float startMillis;
+static Servo base_servo;
+static Servo arm_servo;
+static Servo claw_servo;
 
 /**************************************************************************************************
 *
@@ -51,5 +55,6 @@ static float startMillis;
 
 void setupSonar();
 extern float getFrontObstacleDistance_cm();
+void setupRobotArm();
 
 #endif

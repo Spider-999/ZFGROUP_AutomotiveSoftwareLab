@@ -1,4 +1,3 @@
-#include <Servo.h>
 #include <Arduino.h>
 #include "direction.h"
 #include "sonar.h"
@@ -218,7 +217,7 @@ void changeSpeed(uint8_t targetSpeed, uint8_t mode)
     {
         // Store the previous time.
         previousTime = currentTime;
-        DC_PWM_Value = targetSpeed;
+        DC_PWM_Value++;
       	setPwm(DC_PWM_Value, mode);
     }
 }
@@ -328,4 +327,70 @@ int checkPWM(int number, int lower_limit, int upper_limit)
 
     // If the number is within the interval then return it.
     return number;
+}
+
+/**************************************************************************************************
+                              FUNCTION INFO
+NAME:
+    LineTrackingFunction
+
+DESCRIPTION:
+    The car follows the black line and goes forward with a chosen cruise speed.
+
+**************************************************************************************************/
+void LineTrackingFunction()
+{
+    int leftSensor = digitalRead(7);
+    int centerSensor = digitalRead(8);
+    int rightSensor = digitalRead(A1);
+
+    Serial.print("Left:");
+    Serial.println(leftSensor);
+    Serial.print("Center:");
+    Serial.println(centerSensor);
+    Serial.print("Right:");
+    Serial.println(rightSensor);
+
+    if(centerSensor == LOW && leftSensor == LOW && rightSensor == LOW)
+    {
+        if(previousLeft)
+            Rotate_Left(80);
+        else if(previousRight)
+            Rotate_Right(80);
+    }
+    else
+    {
+    if(centerSensor == LOW && leftSensor == HIGH && rightSensor == LOW)
+        Rotate_Left(80);
+
+    if(centerSensor == HIGH && leftSensor == HIGH && rightSensor == LOW)
+        Rotate_Left(80);
+
+    if(centerSensor == HIGH && leftSensor == LOW && rightSensor == HIGH)
+        Rotate_Right(80);
+
+    if(centerSensor == LOW && leftSensor == LOW && rightSensor == HIGH)
+        Rotate_Right(80);
+
+    if(centerSensor == HIGH)
+    {
+        Move_Forward(40);
+        previousLeft = 0;
+        previousRight = 0;
+    }
+
+    if(leftSensor == HIGH)
+        previousLeft = leftSensor;
+
+    if(rightSensor == HIGH)
+        previousRight = rightSensor;
+}
+    
+}
+
+void setupLineTracking()
+{
+  pinMode(7, INPUT); // left line tracking sensor
+  pinMode(8, INPUT); // center line tracking sensor
+  pinMode(A1, INPUT); //right line tracking sensor
 }

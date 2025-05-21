@@ -96,6 +96,7 @@ void Select_Menu()
   // changeSpeed(255, option);
   // getFrontObstacleDistance_cm();
   // autonomousEmergencyBrake();
-  adaptive_cruise_control(BRAKE_SPEED, 150, AEB_THRESHOLD, 50);
+  // adaptive_cruise_control(BRAKE_SPEED, 150, AEB_THRESHOLD, 50);
+  LineTrackingFunction();
 }
 #endif

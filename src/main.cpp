@@ -7,6 +7,7 @@ void setup()
 
   setupSonar();
   setupMotors();
+  setupLineTracking();
   initializePID();
   
   Print_Menu();
