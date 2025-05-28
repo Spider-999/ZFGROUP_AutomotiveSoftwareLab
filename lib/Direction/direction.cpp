@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Servo.h>
 #include "direction.h"
 #include "sonar.h"
 
@@ -138,6 +139,7 @@ void autonomousEmergencyBrake()
     if(getFrontObstacleDistance_cm() <= AEB_THRESHOLD)
     {
         Stop();
+        moveObject();
     }
 }
 
@@ -269,6 +271,9 @@ void adaptive_cruise_control(uint8_t min_speed, uint8_t max_speed, uint8_t min_d
       pid.lastError = pid.currentError;
       pid.lastTime = currentTime;
     }
+
+    // Emergency brake if the obstacle is too close.
+  	autonomousEmergencyBrake();
 }
 
 void adaptive_cruise_control1(uint8_t min_speed, uint8_t max_speed, uint8_t min_distance, uint16_t max_distance, uint8_t mode) 
@@ -404,3 +409,84 @@ void setupLineTracking()
   pinMode(8, INPUT); // center line tracking sensor
   pinMode(A1, INPUT); //right line tracking sensor
 }
+
+/**************************************************************************************************
+                              FUNCTION INFO
+NAME:
+    moveObject
+
+DESCRIPTION:
+    Follows the line with the car.
+**************************************************************************************************/
+Servo base_servo, claw_servo, arm_servo;
+void setupRobotArm()
+{
+  #if CAR1_PIXY == 1
+    base_servo.attach(9);
+  #endif
+
+  #if CAR2_ARM == 1
+    base_servo.attach(10);
+    arm_servo.attach(9);
+    claw_servo.attach(11);
+
+    base_servo.write(90);
+    claw_servo.write(0);
+    arm_servo.write(0);
+  #endif
+}
+
+void moveObject()
+{
+
+    for(int i=0; i<=90;i++) //apleaca bratu
+    {
+        arm_servo.write(i);
+        claw_position=i;
+        delay(20);
+    }
+    for(int i=0; i<=100;i++) //inchide claw
+    {
+        claw_servo.write(i);
+        claw_position=i;
+        delay(20);
+    }
+    for(int i=90; i>0;i--)  //ridica bratu
+    {
+        arm_position=i;
+        arm_servo.write(i);
+        delay(20);
+    }
+    for(int i=90; i<=180;i++) //roteste baseu
+    {
+        base_position=1;
+        base_servo.write(i);
+        delay(20);
+    }
+    for(int i=0; i<=90;i++) //apleaca bratu
+    {
+        arm_position=i;
+        arm_servo.write(i);
+        delay(20);
+    }
+    for(int i=100; i>0;i--) //inchide claw
+    {
+        claw_position=i;
+        claw_servo.write(i);
+        delay(20);
+    }
+    for(int i=90; i>0;i--)  //ridica bratu
+    {
+        arm_position=i;
+        arm_servo.write(i);
+        delay(20);
+    }
+    for(int i=180; i>=90;i--) //roteste baseu
+    {
+        base_position=1;
+        base_servo.write(i);
+        delay(20);
+    }
+}
+
+

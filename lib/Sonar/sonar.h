@@ -9,7 +9,6 @@
 
 #include <Arduino.h>
 #include <MovingAverage.h>
-#include <Servo.h>
 
 /**************************************************************************************************
 *
@@ -43,9 +42,6 @@ static float duration;
 static float lastSonarValue;
 static MovingAverage movingAverage(MOVING_AVG_SIZE);
 static float startMillis;
-static Servo base_servo;
-static Servo arm_servo;
-static Servo claw_servo;
 
 /**************************************************************************************************
 *
@@ -55,6 +51,5 @@ static Servo claw_servo;
 
 void setupSonar();
 extern float getFrontObstacleDistance_cm();
-void setupRobotArm();
 
 #endif

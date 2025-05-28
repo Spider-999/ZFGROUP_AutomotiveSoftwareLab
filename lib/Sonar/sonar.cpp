@@ -70,16 +70,3 @@ extern float getFrontObstacleDistance_cm()
   Serial.println(lastSonarValue);
   return lastSonarValue;
 }
-
-void setupRobotArm()
-{
-  #if CAR1_PIXY == 1
-    base_servo.attach(9);
-  #endif
-
-  #if CAR2_ARM == 1
-    base_servo.attach(10);
-    arm_servo.attach(9);
-    claw_servo.attach(11);
-  #endif
-}

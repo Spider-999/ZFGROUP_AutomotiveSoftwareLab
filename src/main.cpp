@@ -8,6 +8,7 @@ void setup()
   setupSonar();
   setupMotors();
   setupLineTracking();
+  setupRobotArm();
   initializePID();
   
   Print_Menu();

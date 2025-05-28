@@ -19,7 +19,7 @@
 #define BACKWARD 2
 #define LEFT 3
 #define RIGHT 4
-#define AEB_THRESHOLD 20
+#define AEB_THRESHOLD 15
 #define BRAKE_SPEED 0
 #define LOWER_PWM_LIMIT 1
 #define HIGHER_PWM_LIMIT 255
@@ -57,6 +57,9 @@ static PID pid;
 static int previousLeft = 0;
 static int previousRight = 0;
 static long time1 = 0;
+static int base_position = 90;
+static int claw_position = 0;
+static int arm_position=0;
 
 
 /**************************************************************************************************
@@ -81,5 +84,8 @@ int     checkPWM(int, int, int);
 void    changeSpeed(uint8_t, uint8_t);
 void    LineTrackingFunction();
 void    initializePID();
+void    setupRobotArm();
+void    moveObject();
+
 
 #endif
