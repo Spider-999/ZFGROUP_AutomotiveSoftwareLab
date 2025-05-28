@@ -208,6 +208,7 @@ DESCRIPTION:
     mode    - direction of the car (FORWARD/BACKWARD/LEFT/RIGHT)
 
 **************************************************************************************************/
+long int time2 = 0;
 void changeSpeed(uint8_t targetSpeed, uint8_t mode)
 {
     long currentTime = millis();
@@ -217,7 +218,7 @@ void changeSpeed(uint8_t targetSpeed, uint8_t mode)
     {
         // Store the previous time.
         previousTime = currentTime;
-        DC_PWM_Value++;
+        DC_PWM_Value = targetSpeed;
       	setPwm(DC_PWM_Value, mode);
     }
 }
@@ -234,7 +235,7 @@ DESCRIPTION:
     - If the obstacle is somewhere between 'min_distance' and 'max_distance', the speed is calculated proportionally.
 
 **************************************************************************************************/
-void adaptive_cruise_control(uint8_t min_speed, uint8_t max_speed, uint8_t min_distance, uint16_t max_distance) 
+void adaptive_cruise_control(uint8_t min_speed, uint8_t max_speed, uint8_t min_distance, uint16_t max_distance, uint8_t mode) 
 { 
     float obstacleDistance = getFrontObstacleDistance_cm();
     unsigned long currentTime = millis();
@@ -259,7 +260,7 @@ void adaptive_cruise_control(uint8_t min_speed, uint8_t max_speed, uint8_t min_d
       pid.speedControlSignal = constrain(pid.speedControlSignal, min_speed, max_speed);
 
       // Change speed using the PID output.
-      changeSpeed((uint8_t)pid.speedControlSignal, FORWARD);
+      changeSpeed((uint8_t)pid.speedControlSignal, mode);
 
       // Emergency brake if the obstacle is too close.
   	  autonomousEmergencyBrake();
@@ -268,6 +269,23 @@ void adaptive_cruise_control(uint8_t min_speed, uint8_t max_speed, uint8_t min_d
       pid.lastError = pid.currentError;
       pid.lastTime = currentTime;
     }
+}
+
+void adaptive_cruise_control1(uint8_t min_speed, uint8_t max_speed, uint8_t min_distance, uint16_t max_distance, uint8_t mode) 
+    {   
+        float distance=getFrontObstacleDistance_cm();
+        if(distance<min_distance)
+            autonomousEmergencyBrake();
+        else if(distance>max_distance)
+            changeSpeed(max_speed, mode);
+        else
+        {
+            float x = (distance - min_distance) / (float)(max_distance - min_distance);
+            //Serial.println("x este");
+            //Serial.println(x);
+            int targetSpeed = min_speed + x * (max_speed - min_speed);
+            changeSpeed(targetSpeed,mode);
+        }
 }
 
 /**************************************************************************************************
@@ -344,37 +362,29 @@ void LineTrackingFunction()
     int centerSensor = digitalRead(8);
     int rightSensor = digitalRead(A1);
 
-    Serial.print("Left:");
-    Serial.println(leftSensor);
-    Serial.print("Center:");
-    Serial.println(centerSensor);
-    Serial.print("Right:");
-    Serial.println(rightSensor);
-
     if(centerSensor == LOW && leftSensor == LOW && rightSensor == LOW)
     {
         if(previousLeft)
-            Rotate_Left(80);
+            adaptive_cruise_control(BRAKE_SPEED, 55, AEB_THRESHOLD, 50, LEFT);
         else if(previousRight)
-            Rotate_Right(80);
+            adaptive_cruise_control(BRAKE_SPEED, 55, AEB_THRESHOLD, 50, RIGHT);
     }
     else
     {
     if(centerSensor == LOW && leftSensor == HIGH && rightSensor == LOW)
-        Rotate_Left(80);
-
+        adaptive_cruise_control(BRAKE_SPEED, 45, AEB_THRESHOLD, 50, LEFT);
     if(centerSensor == HIGH && leftSensor == HIGH && rightSensor == LOW)
-        Rotate_Left(80);
+        adaptive_cruise_control(BRAKE_SPEED, 55, AEB_THRESHOLD, 50, LEFT);
 
     if(centerSensor == HIGH && leftSensor == LOW && rightSensor == HIGH)
-        Rotate_Right(80);
+        adaptive_cruise_control(BRAKE_SPEED, 55, AEB_THRESHOLD, 50, RIGHT);
 
     if(centerSensor == LOW && leftSensor == LOW && rightSensor == HIGH)
-        Rotate_Right(80);
+        adaptive_cruise_control(BRAKE_SPEED, 45, AEB_THRESHOLD, 50, RIGHT);
 
     if(centerSensor == HIGH)
     {
-        Move_Forward(40);
+        adaptive_cruise_control(BRAKE_SPEED, 120, AEB_THRESHOLD, 50, FORWARD);
         previousLeft = 0;
         previousRight = 0;
     }
