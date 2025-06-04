@@ -67,6 +67,6 @@ extern float getFrontObstacleDistance_cm()
     lastSonarValue = estimated_distance;
     startMillis = currentMillis;
   }
-  Serial.println(lastSonarValue);
+  
   return lastSonarValue;
 }

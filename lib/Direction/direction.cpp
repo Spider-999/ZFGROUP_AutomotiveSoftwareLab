@@ -135,10 +135,10 @@ DESCRIPTION:
 
 **************************************************************************************************/
 void autonomousEmergencyBrake()
-{
-    if(getFrontObstacleDistance_cm() <= AEB_THRESHOLD)
+{    float test=getFrontObstacleDistance_cm();
+    if(test <= AEB_THRESHOLD && test>1)
     {
-        Stop();
+        Stop();       
         moveObject();
     }
 }
@@ -273,7 +273,7 @@ void adaptive_cruise_control(uint8_t min_speed, uint8_t max_speed, uint8_t min_d
     }
 
     // Emergency brake if the obstacle is too close.
-  	autonomousEmergencyBrake();
+  	// autonomousEmergencyBrake();
 }
 
 void adaptive_cruise_control1(uint8_t min_speed, uint8_t max_speed, uint8_t min_distance, uint16_t max_distance, uint8_t mode) 
@@ -389,7 +389,7 @@ void LineTrackingFunction()
 
     if(centerSensor == HIGH)
     {
-        adaptive_cruise_control(BRAKE_SPEED, 120, AEB_THRESHOLD, 50, FORWARD);
+        adaptive_cruise_control(BRAKE_SPEED, 80, AEB_THRESHOLD, 50, FORWARD);
         previousLeft = 0;
         previousRight = 0;
     }
@@ -429,11 +429,15 @@ void setupRobotArm()
     base_servo.attach(10);
     arm_servo.attach(9);
     claw_servo.attach(11);
+    prepareArms();
 
-    base_servo.write(90);
-    claw_servo.write(0);
-    arm_servo.write(0);
   #endif
+}
+
+void prepareArms(){
+    arm_servo.write(0);
+    claw_servo.write(20);
+    base_servo.write(90);
 }
 
 void moveObject()
@@ -445,7 +449,7 @@ void moveObject()
         claw_position=i;
         delay(20);
     }
-    for(int i=0; i<=100;i++) //inchide claw
+    for(int i=0; i<=100;i++) //deschide claw
     {
         claw_servo.write(i);
         claw_position=i;
@@ -469,7 +473,7 @@ void moveObject()
         arm_servo.write(i);
         delay(20);
     }
-    for(int i=100; i>0;i--) //inchide claw
+    for(int i=100; i>20;i--) //inchide claw
     {
         claw_position=i;
         claw_servo.write(i);

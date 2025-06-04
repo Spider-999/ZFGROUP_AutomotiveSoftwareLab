@@ -83,6 +83,7 @@ void Select_Menu()
     }
   }
 
+  /*
   // Goes to the selected option of the operator
   if(option == 0)
   {
@@ -92,7 +93,7 @@ void Select_Menu()
       Print_Menu();
     }
   }
-  
+  */
   // changeSpeed(255, option);
   // getFrontObstacleDistance_cm();
   // autonomousEmergencyBrake();

@@ -19,7 +19,7 @@
 #define BACKWARD 2
 #define LEFT 3
 #define RIGHT 4
-#define AEB_THRESHOLD 15
+#define AEB_THRESHOLD 16
 #define BRAKE_SPEED 0
 #define LOWER_PWM_LIMIT 1
 #define HIGHER_PWM_LIMIT 255
@@ -86,6 +86,7 @@ void    LineTrackingFunction();
 void    initializePID();
 void    setupRobotArm();
 void    moveObject();
+void    prepareArms();
 
 
 #endif

@@ -11,7 +11,7 @@ void setup()
   setupRobotArm();
   initializePID();
   
-  Print_Menu();
+  // Print_Menu();
 }
 
 void loop()
