@@ -140,8 +140,9 @@ void autonomousEmergencyBrake()
 {   test=getFrontObstacleDistance_cm();
     if(test <= AEB_THRESHOLD && test>1)
     {
-        Stop();       
-        moveObject();
+        Stop(); 
+       // if(objectPickedNum % 2 == 0)      
+           // moveObject();
     }
 }
 
@@ -444,7 +445,7 @@ void prepareArms(){
 
 void moveObject()
 {
-
+    objectPickedNum++;
     for(int i=0; i<=90;i++) //apleaca bratu
     {
         arm_servo.write(i);

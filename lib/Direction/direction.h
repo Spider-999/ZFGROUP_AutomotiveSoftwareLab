@@ -60,6 +60,7 @@ static long time1 = 0;
 static int base_position = 90;
 static int claw_position = 0;
 static int arm_position=0;
+static int objectPickedNum = 0;
 
 
 /**************************************************************************************************
