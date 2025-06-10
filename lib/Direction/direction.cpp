@@ -132,10 +132,12 @@ NAME:
 
 DESCRIPTION:
     Handle the AEB functionality(stop at obstacle).
-
+ 
 **************************************************************************************************/
+ float test=100;
+
 void autonomousEmergencyBrake()
-{    float test=getFrontObstacleDistance_cm();
+{   test=getFrontObstacleDistance_cm();
     if(test <= AEB_THRESHOLD && test>1)
     {
         Stop();       
@@ -370,26 +372,26 @@ void LineTrackingFunction()
     if(centerSensor == LOW && leftSensor == LOW && rightSensor == LOW)
     {
         if(previousLeft)
-            adaptive_cruise_control(BRAKE_SPEED, 55, AEB_THRESHOLD, 50, LEFT);
+            adaptive_cruise_control1(BRAKE_SPEED, 55, AEB_THRESHOLD, 50, LEFT);
         else if(previousRight)
-            adaptive_cruise_control(BRAKE_SPEED, 55, AEB_THRESHOLD, 50, RIGHT);
+            adaptive_cruise_control1(BRAKE_SPEED, 55, AEB_THRESHOLD, 50, RIGHT);
     }
     else
     {
     if(centerSensor == LOW && leftSensor == HIGH && rightSensor == LOW)
-        adaptive_cruise_control(BRAKE_SPEED, 45, AEB_THRESHOLD, 50, LEFT);
+        adaptive_cruise_control1(BRAKE_SPEED, 45, AEB_THRESHOLD, 50, LEFT);
     if(centerSensor == HIGH && leftSensor == HIGH && rightSensor == LOW)
-        adaptive_cruise_control(BRAKE_SPEED, 55, AEB_THRESHOLD, 50, LEFT);
+        adaptive_cruise_control1(BRAKE_SPEED, 55, AEB_THRESHOLD, 50, LEFT);
 
     if(centerSensor == HIGH && leftSensor == LOW && rightSensor == HIGH)
-        adaptive_cruise_control(BRAKE_SPEED, 55, AEB_THRESHOLD, 50, RIGHT);
+        adaptive_cruise_control1(BRAKE_SPEED, 55, AEB_THRESHOLD, 50, RIGHT);
 
     if(centerSensor == LOW && leftSensor == LOW && rightSensor == HIGH)
-        adaptive_cruise_control(BRAKE_SPEED, 45, AEB_THRESHOLD, 50, RIGHT);
+        adaptive_cruise_control1(BRAKE_SPEED, 45, AEB_THRESHOLD, 50, RIGHT);
 
     if(centerSensor == HIGH)
     {
-        adaptive_cruise_control(BRAKE_SPEED, 80, AEB_THRESHOLD, 50, FORWARD);
+        adaptive_cruise_control1(BRAKE_SPEED, 80, AEB_THRESHOLD, 50, FORWARD);
         previousLeft = 0;
         previousRight = 0;
     }
